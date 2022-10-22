@@ -67,6 +67,16 @@ class InvoiceManagementServiceImplTest {
     }
 
     @Test
+    void deleteInvoiceTest() {
+
+        //WHEN
+        invoiceManagementService.deleteInvoice("12345678");
+
+        //THEN
+        assertFalse(invoiceRepository.findById("12345678").isPresent());
+    }
+
+    @Test
     void updateInvoiceTest() {
         //GIVEN
         Invoice testDataForUpdateInvoice = buildTestDataForUpdateInvoice();

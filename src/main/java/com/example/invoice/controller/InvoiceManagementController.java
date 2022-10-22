@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static com.example.invoice.helper.InvoiceManagementHelper.DELETE_INVOICE_SUCCESSFUL_FOR_INVOICE_ID;
+
 @RestController
 public class InvoiceManagementController {
 
@@ -40,7 +42,7 @@ public class InvoiceManagementController {
     }
 
     @ResponseBody
-    @PostMapping("/invoice")
+    @PutMapping("/invoice")
     public ResponseEntity<Invoice> updateInvoice(@RequestBody Invoice invoiceUpdate) {
         try {
             if(invoiceUpdate.getProducts().isEmpty()) {
@@ -51,6 +53,19 @@ public class InvoiceManagementController {
         } catch (NoSuchElementException noSuchElementException) {
             logger.error(noSuchElementException.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @ResponseBody
+    @DeleteMapping("/invoice")
+    public ResponseEntity<String> deleteInvoice(@RequestParam String invoiceId) {
+        try {
+            service.deleteInvoice(invoiceId);
+            return new ResponseEntity<>(String.format(DELETE_INVOICE_SUCCESSFUL_FOR_INVOICE_ID, invoiceId),
+                    HttpStatus.OK);
         } catch (Exception ex) {
             logger.error(ex.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -59,6 +59,13 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
         return invoiceRepository.save(invoice);
     }
 
+    @Override
+    public void deleteInvoice(String invoiceId) {
+        logger.info(String.format("Delete Invoice request for Invoice Id: %s", invoiceId));
+
+        invoiceRepository.deleteById(invoiceId);
+    }
+
     private List<Product> getUpdatedExistingProducts(List<Product> invoiceProducts, List<Product> updateProducts) {
         List<Product> existingProducts = updateProducts.stream().filter(updateProduct -> invoiceProducts.contains(updateProduct))
                 .collect(Collectors.toList());

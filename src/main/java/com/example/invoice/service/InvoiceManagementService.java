@@ -8,4 +8,5 @@ public interface InvoiceManagementService {
 
     Optional<Invoice> getInvoice(String invoiceId);
     Invoice updateInvoice(Invoice invoiceUpdate);
+    void deleteInvoice(String invoiceId);
 }

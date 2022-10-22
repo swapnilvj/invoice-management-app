@@ -3,7 +3,7 @@
 ## Invoice API - Challenge
    As a user I would like to import the invoice and generate the invoice PDF. Below are the detail requirements for the microservice(s) to be created.
 
-# Sample invoice to be imported as json 
+## Sample invoice to be imported as json 
 	{
 	  "InvoiceId":"12345678",
 	  "Customer" : {
@@ -26,8 +26,7 @@
 		}],
 	  }
 
-
-# R1: Rest end point should be provided to import the invoice 
+## R1: Rest end point should be provided to import the invoice 
 	Below are the validation and business rules that must be implemented
 
 	•	InvoiceId, Customer (All child elements) , Net Price, Product (All child elements) are mandatory and while importing the invoice if they are missing then we should reject the import 
@@ -37,7 +36,7 @@
 	•	Invoice Id should be of length 8 and customer id should be of length 4 and product id should be of length 5.
 	•	One customer can have many invoices but one invoice id will belong to one customer
 
-# R2: Rest End point to view the invoice by invoiceId.
+## R2: Rest End point to view the invoice by invoiceId.
 	As a user I would like to view the invoice details as below based upon invoiceId.
 	For example, if I query InvoiceId: 12345678 should return the below response
 
@@ -63,10 +62,10 @@
 		}],
 	  }
 
-# R3: Rest endpoint to delete the invoice by invoiceId.
+## R3: Rest endpoint to delete the invoice by invoiceId.
 	As a user I should be able to delete the invoice by invoiceId.
 
-# R4: Rest endpoint to update the invoice
+## R4: Rest endpoint to update the invoice
 	As a user I would like to update the invoice by invoice Id but only products can be updated.
 	For example, if Invoice has product with Id 12345 the with below request I should be able to update the product details
 	{
@@ -83,12 +82,12 @@
 	For the invoice if product id is found then update the product else add the product.
 
 
-# R5: As a user there should a possibility to configure discount based upon productid and customerId while generating the pdf.
+## R5: As a user there should a possibility to configure discount based upon productid and customerId while generating the pdf.
 	For example, if we configure productids [12345,5555] with discount 10 euro then a 10 euro discount must be applied on the product while generating the pdf bill.
 	Same for Customer Ids customerIds[1234,3333] with 20 euro discount. This discount should be applicable only while generating the pdf. 
 
 
-# R6: Rest end point to generate the PDF by invoice ID.
+## R6: Rest end point to generate the PDF by invoice ID.
 	As a user I would like to generate invoice pdf for example as Below
 
 	Dear <CustomerName>,
@@ -101,11 +100,11 @@
 
 
 
-# Technical Requirements:
+## Technical Requirements:
 	The code should be of highest quality and should be deployable in production. Use any open source api to generate pdf.
 
 
-# Assignment:
+## Assignment:
 	-	Please highlight design and conceptual issues of those requirements
 	-	Please add to all requirements how the response of the service(s) look like
 	-	Write a list of all assumptions you took to come up with the responses
@@ -133,6 +132,6 @@
         InvoiceId: String
 		ProductIds: List<String>
 		customerId: String
-		isImported: enum(Y/N)
+		isImported: Boolean
     5. Used H2 in-memory DB as a storage
     6. validation and business rules are enforced using Validator  
