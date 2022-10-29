@@ -5,10 +5,16 @@ import com.example.invoice.service.impl.InvoiceManagementServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -45,7 +51,7 @@ public class InvoiceManagementController {
     @PutMapping("/invoice")
     public ResponseEntity<Invoice> updateInvoice(@RequestBody Invoice invoiceUpdate) {
         try {
-            if(invoiceUpdate.getProducts().isEmpty()) {
+            if (invoiceUpdate.getProducts().isEmpty()) {
                 throw new RuntimeException("Operation Not Allowed.");
             }
             Invoice importInvoice = service.updateInvoice(invoiceUpdate);
@@ -72,4 +78,21 @@ public class InvoiceManagementController {
         }
     }
 
+    @ResponseBody
+    @GetMapping(value = "/invoice/importpdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<Resource> importInvoice(@RequestParam String invoiceId, HttpServletRequest request) {
+        try {
+            String invoicePdf = service.importInvoice(invoiceId);
+
+            Resource resource = new UrlResource(Paths.get(invoicePdf).toUri());
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+
+
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
