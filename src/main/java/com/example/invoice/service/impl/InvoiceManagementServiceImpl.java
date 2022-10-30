@@ -17,12 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.example.invoice.helper.InvoiceManagementHelper.*;
 
 @Service
 public class InvoiceManagementServiceImpl implements InvoiceManagementService {
@@ -80,10 +83,6 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
     @Override
     public String importInvoice(String invoiceId) throws DocumentException, IOException {
         logger.info(String.format("Import Invoice request for Invoice Id: %s", invoiceId));
-        Document document = new Document();
-
-        File importInvoiceFile = new File("test.pdf");  //TODO - configurable file-location and file-name
-        FileOutputStream fileOutputStream = new FileOutputStream(importInvoiceFile);
         try {
             Optional<Invoice> invoiceOptional = invoiceRepository.findById(invoiceId);
             if (!invoiceOptional.isPresent()) {
@@ -103,26 +102,34 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
 
             List<Product> products = invoice.getProducts();
 
-            PdfWriter pdfWriter = PdfWriter.getInstance(document, fileOutputStream);
-            document.open();
-            Paragraph invoiceParagraph = new Paragraph();
-            invoiceParagraph.add(String.format("Dear %s,\n", customer.getName()));  //TODO: use template
-            invoiceParagraph.add("Below are your invoice details\n");
-            for (Product product : products) {
-
-                invoiceParagraph.add(String.format("%s: %d €\n", product.getName(), product.getPrice()));
-            }
-
-            document.add(invoiceParagraph);
-            byte[] pdfBytes = pdfWriter.getDirectContent().toPdf(pdfWriter);
-            document.close();
-
-            return importInvoiceFile.getAbsolutePath();
+            return generatePdfInvoice(invoiceId, customer, products);
         } catch (DocumentException e) {
             logger.error(e.getMessage());
             throw e;
         }
 
+    }
+
+    private String generatePdfInvoice(String invoiceId, Customer customer, List<Product> products) throws DocumentException, FileNotFoundException {
+        File importInvoiceFile = new File(String.format("%s.pdf",invoiceId));  //TODO - configurable file-location and file-name
+        FileOutputStream fileOutputStream = new FileOutputStream(importInvoiceFile);
+        Document document = new Document();
+        PdfWriter.getInstance(document, fileOutputStream);
+        document.open();
+        Paragraph invoiceParagraph = new Paragraph();
+        float totalPrice = 0;
+        invoiceParagraph.add(String.format(INVOICE_TEMPLATE_TITLE, customer.getName()));
+        for (Product product : products) {
+
+            float discountedPrice = calculateDiscountedPrice(product);
+
+            invoiceParagraph.add(String.format(INVOICE_TEMPLATE_BODY, product.getName(), discountedPrice));
+            totalPrice += discountedPrice;
+        }
+        invoiceParagraph.add(String.format(INVOICE_TEMPLATE_FOOTER, totalPrice));
+        document.add(invoiceParagraph);
+        document.close();
+        return importInvoiceFile.getAbsolutePath();
     }
 
     private List<Product> getUpdatedExistingProducts(List<Product> invoiceProducts, List<Product> updateProducts) {

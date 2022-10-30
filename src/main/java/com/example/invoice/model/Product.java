@@ -18,9 +18,9 @@ public class Product {
     @JsonProperty("Name")
     private String name;
     @JsonProperty("Price")
-    private Long price;
+    private float price;
     @JsonProperty("Discount")
-    private Double discount;
+    private float discount;
 
     public Product() {
     }
@@ -41,19 +41,19 @@ public class Product {
         this.name = name;
     }
 
-    public Long getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
-    public Double getDiscount() {
+    public float getDiscount() {
         return discount;
     }
 
-    public void setDiscount(Double discount) {
+    public void setDiscount(float discount) {
         this.discount = discount;
     }
 

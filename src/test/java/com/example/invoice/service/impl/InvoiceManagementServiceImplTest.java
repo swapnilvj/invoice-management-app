@@ -47,13 +47,13 @@ class InvoiceManagementServiceImplTest {
         Product product1 = new Product();
         product.setProductId("12345");
         product.setName("Internet Package");
-        product.setPrice((long) 100);
-        product.setDiscount((double) 10);
+        product.setPrice(100);
+        product.setDiscount(10);
 
         product1.setProductId("12341");
         product1.setName("SMS Package");
-        product1.setPrice((long) 101);
-        product1.setDiscount((double) 10);
+        product1.setPrice(101);
+        product1.setDiscount(10);
 
         products.add(product);
         invoice.setProducts(products);
@@ -102,12 +102,14 @@ class InvoiceManagementServiceImplTest {
         Invoice testDataForUpdateInvoice = buildTestDataForImportInvoice();
 
         //WHEN
-        String importInvoice = invoiceManagementService.importInvoice("12345679");
+        String invoiceId = "12345679";
+        String importInvoice = invoiceManagementService.importInvoice(invoiceId);
 
         System.out.println(importInvoice);
         //THEN
         Resource resource = new UrlResource(Paths.get(importInvoice).toUri());
         assertTrue(resource.getFile().exists());
+        assertEquals(invoiceId, resource.getFilename());
         assertTrue(resource.getFile().length() > 0);
     }
 
@@ -120,13 +122,13 @@ class InvoiceManagementServiceImplTest {
         product.setName("SMS Package");
         product.setProductId("12341");
         product.setPrice((long) 100);
-        product.setDiscount((double) 10);
+        product.setDiscount(10);
         products.add(product);
         Product product1 = new Product();
         product1.setProductId("12345");
         product1.setName("Internet Package");
-        product1.setPrice((long) 99);
-        product1.setDiscount((double) 10);
+        product1.setPrice(99);
+        product1.setDiscount(10);
         products.add(product1);
 
         invoiceUpdateTestData.setProducts(products);
@@ -142,14 +144,14 @@ class InvoiceManagementServiceImplTest {
         Product product = new Product();
         product.setName("SMS Package");
         product.setProductId("12349");
-        product.setPrice((long) 91);
-        product.setDiscount((double) 10);
+        product.setPrice(91);
+        product.setDiscount(10);
         products.add(product);
         Product product1 = new Product();
         product1.setProductId("12348");
         product1.setName("Internet Package");
-        product1.setPrice((long) 99);
-        product1.setDiscount((double) 10);
+        product1.setPrice(99);
+        product1.setDiscount(10);
         products.add(product1);
 
         invoiceImportTestData.setProducts(products);
