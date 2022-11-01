@@ -14,4 +14,5 @@ public interface InvoiceManagementService {
     Invoice updateInvoice(Invoice invoiceUpdate);
     void deleteInvoice(String invoiceId);
     String importInvoice(String invoiceId) throws DocumentException, IOException;
+    void mockLoadInvoices();
 }

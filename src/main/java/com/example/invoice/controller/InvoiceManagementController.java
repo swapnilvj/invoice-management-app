@@ -25,7 +25,7 @@ public class InvoiceManagementController {
 
     private final static Logger logger = LoggerFactory.getLogger(InvoiceManagementController.class);
 
-    private InvoiceManagementServiceImpl service;
+    private final InvoiceManagementServiceImpl service;
 
     @Autowired
     public InvoiceManagementController(InvoiceManagementServiceImpl service) {
@@ -102,5 +102,11 @@ public class InvoiceManagementController {
             logger.error(ex.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/invoice/load")
+    public ResponseEntity<String> loadInvoices() {
+        service.mockLoadInvoices();
+        return new ResponseEntity<>("Invoices Loaded Successfully.", HttpStatus.OK);
     }
 }

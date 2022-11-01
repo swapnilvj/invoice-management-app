@@ -8,10 +8,7 @@ import com.example.invoice.repository.CustomerRepository;
 import com.example.invoice.repository.InvoiceRepository;
 import com.example.invoice.repository.ProductRepository;
 import com.example.invoice.service.InvoiceManagementService;
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -119,6 +111,38 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
             throw e;
         }
 
+    }
+
+    @Override
+    public void mockLoadInvoices() {
+        Invoice invoiceImportTestData = new Invoice();
+        invoiceImportTestData.setInvoiceId("12345679");
+        invoiceImportTestData.setCustomerId("1235");
+        invoiceImportTestData.setImported(false);
+        ArrayList<Product> products = new ArrayList<>();
+        Product product = new Product();
+        product.setName("SMS Package");
+        product.setProductId("12349");
+        product.setPrice(91);
+        product.setDiscount(10);
+        products.add(product);
+        Product product1 = new Product();
+        product1.setProductId("12348");
+        product1.setName("Internet Package");
+        product1.setPrice(99);
+        product1.setDiscount(10);
+        products.add(product1);
+
+        invoiceImportTestData.setProducts(products);
+        productRepository.save(product);
+        productRepository.save(product1);
+        invoiceRepository.save(invoiceImportTestData);
+
+        Customer customer = new Customer();
+        customer.setName("Test User1");
+        customer.setEmail("test.user1@gmail.com");
+        customer.setCustomerId("1235");
+        customerRepository.save(customer);
     }
 
     private void updateInvoiceImportedFlag(Invoice invoice) {
