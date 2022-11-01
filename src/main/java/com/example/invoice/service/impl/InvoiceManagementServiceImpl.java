@@ -123,13 +123,13 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
         Product product = new Product();
         product.setName("SMS Package");
         product.setProductId("12349");
-        product.setPrice(91);
+        product.setPrice(91f);
         product.setDiscount(10);
         products.add(product);
         Product product1 = new Product();
         product1.setProductId("12348");
         product1.setName("Internet Package");
-        product1.setPrice(99);
+        product1.setPrice(99f);
         product1.setDiscount(10);
         products.add(product1);
 

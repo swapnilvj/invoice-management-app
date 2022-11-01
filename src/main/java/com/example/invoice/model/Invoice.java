@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Table(name = "Invoice")
@@ -13,12 +14,15 @@ public class Invoice {
 
     @JsonProperty("InvoiceId")
     @Id
+    @Size(min = 8, max = 8)
     private String invoiceId;
 
     @JsonProperty("CustomerId")
+    @Size(min = 4, max = 4)
     private String customerId;
     @JsonProperty("Products")
     @OneToMany(targetEntity=Product.class, fetch=FetchType.EAGER)
+    @Size(min = 1)
     private List<Product> products;
     private Boolean isImported;
 

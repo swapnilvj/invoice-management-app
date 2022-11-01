@@ -3,13 +3,17 @@ package com.example.invoice.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Table(name = "Customer")
 @Entity
 public class Customer {
     @Id
     private String customerId;
+    @NotNull(message = "Name is mandatory")
     private String name;
+    @NotNull(message = "Email is mandatory")
     private String email;
 
     public Customer() {
