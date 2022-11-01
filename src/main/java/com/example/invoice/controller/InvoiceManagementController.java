@@ -37,11 +37,15 @@ public class InvoiceManagementController {
     public ResponseEntity<Invoice> getInvoice(@RequestParam String invoiceId) {
         try {
             Optional<Invoice> importInvoice = service.getInvoice(invoiceId);
-            return new ResponseEntity<>(importInvoice.get(), HttpStatus.OK);
+
+            return importInvoice.map(invoice -> new ResponseEntity<>(invoice, HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         } catch (NoSuchElementException noSuchElementException) {
+            logger.error("Invoice Not Found.");
             logger.error(noSuchElementException.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
+            logger.error("Get Invoice Request Failed.");
             logger.error(ex.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -60,6 +64,7 @@ public class InvoiceManagementController {
             logger.error(noSuchElementException.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
+            logger.error("Update Invoice Request Failed.");
             logger.error(ex.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -73,6 +78,7 @@ public class InvoiceManagementController {
             return new ResponseEntity<>(String.format(DELETE_INVOICE_SUCCESSFUL_FOR_INVOICE_ID, invoiceId),
                     HttpStatus.OK);
         } catch (Exception ex) {
+            logger.error("Delete Invoice Request Failed.");
             logger.error(ex.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -91,8 +97,10 @@ public class InvoiceManagementController {
 
 
         } catch (Exception ex) {
+
+            logger.error("Import Invoice PDF Request Failed.");
             logger.error(ex.getMessage());
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

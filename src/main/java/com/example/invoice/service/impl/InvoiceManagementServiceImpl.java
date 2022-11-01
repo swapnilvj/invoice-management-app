@@ -1,5 +1,6 @@
 package com.example.invoice.service.impl;
 
+import com.example.invoice.helper.PdfFileGenerator;
 import com.example.invoice.model.Customer;
 import com.example.invoice.model.Invoice;
 import com.example.invoice.model.Product;
@@ -126,27 +127,10 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
     }
 
     private String generatePdfInvoice(String invoiceId, Customer customer, List<Product> products) throws DocumentException, IOException {
-        Path path = Paths.get(this.fileLocation);
-        Files.createDirectories(path);
-        File importInvoiceFile = new File(path.toFile(), String.format(PDF_FILENAME_FORMAT, invoiceId));
-        FileOutputStream fileOutputStream = new FileOutputStream(importInvoiceFile);
-        Document document = new Document();
-        PdfWriter.getInstance(document, fileOutputStream);
-        document.open();
-        Paragraph invoiceParagraph = new Paragraph();
-        float totalPrice = 0;
-        invoiceParagraph.add(String.format(INVOICE_TEMPLATE_TITLE, customer.getName()));
-        for (Product product : products) {
+        String invoiceData = buildInvoiceData(products, customer);
 
-            float discountedPrice = calculateDiscountedPrice(product);
-
-            invoiceParagraph.add(String.format(INVOICE_TEMPLATE_BODY, product.getName(), discountedPrice));
-            totalPrice += discountedPrice;
-        }
-        invoiceParagraph.add(String.format(INVOICE_TEMPLATE_FOOTER, totalPrice));
-        document.add(invoiceParagraph);
-        document.close();
-        return importInvoiceFile.getAbsolutePath();
+        PdfFileGenerator pdfFileGenerator = new PdfFileGenerator();
+        return pdfFileGenerator.generateFile(invoiceId, this.fileLocation, invoiceData);
     }
 
     private List<Product> getUpdatedExistingProducts(List<Product> invoiceProducts, List<Product> updateProducts) {
@@ -163,4 +147,18 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
         return newProducts;
     }
 
+    private String buildInvoiceData(List<Product> products, Customer customer) {
+        float totalPrice = 0;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(String.format(INVOICE_TEMPLATE_TITLE, customer.getName()));
+        for (Product product : products) {
+
+            float discountedPrice = calculateDiscountedPrice(product);
+
+            stringBuilder.append(String.format(INVOICE_TEMPLATE_BODY, product.getName(), discountedPrice));
+            totalPrice += discountedPrice;
+        }
+        stringBuilder.append(String.format(INVOICE_TEMPLATE_FOOTER, totalPrice));
+        return stringBuilder.toString();
+    }
 }
