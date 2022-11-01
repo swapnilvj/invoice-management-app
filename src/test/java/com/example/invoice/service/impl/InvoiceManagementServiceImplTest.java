@@ -99,18 +99,34 @@ class InvoiceManagementServiceImplTest {
     @Test
     void importInvoiceTest() throws IOException, DocumentException {
         //GIVEN
-        Invoice testDataForUpdateInvoice = buildTestDataForImportInvoice();
+        buildTestDataForImportInvoice();
 
         //WHEN
         String invoiceId = "12345679";
         String importInvoice = invoiceManagementService.importInvoice(invoiceId);
 
-        System.out.println(importInvoice);
         //THEN
         Resource resource = new UrlResource(Paths.get(importInvoice).toUri());
         assertTrue(resource.getFile().exists());
-        assertEquals(invoiceId, resource.getFilename());
+        assertEquals(invoiceId.concat(".pdf"), resource.getFilename());
         assertTrue(resource.getFile().length() > 0);
+    }
+
+    @Test
+    void importInvoiceDuplicateIdTest() throws IOException, DocumentException {
+        //GIVEN
+        buildTestDataForImportInvoice();
+
+        //WHEN
+        String invoiceId = "12345679";
+        invoiceManagementService.importInvoice(invoiceId);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> invoiceManagementService.importInvoice(invoiceId));
+
+        //THEN
+        String expectedMessage = "Invoice Already Imported.";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     public Invoice buildTestDataForUpdateInvoice() {

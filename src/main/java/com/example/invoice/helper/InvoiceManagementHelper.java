@@ -9,6 +9,7 @@ public class InvoiceManagementHelper {
             "Below are your invoice details\n";
     public static final String INVOICE_TEMPLATE_BODY = "%-20s: %.2f €\n";
     public static final String INVOICE_TEMPLATE_FOOTER = "<Total>: %.2f €";
+    public static final String PDF_FILENAME_FORMAT = "%s.pdf";
 
     public static float calculateDiscountedPrice(Product product) {
         float discountVal = product.getPrice() * product.getDiscount() / 100;

@@ -14,12 +14,16 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +32,7 @@ import java.util.stream.Collectors;
 import static com.example.invoice.helper.InvoiceManagementHelper.*;
 
 @Service
+@Configuration
 public class InvoiceManagementServiceImpl implements InvoiceManagementService {
 
     private final static Logger logger = LoggerFactory.getLogger(InvoiceManagementServiceImpl.class);
@@ -35,6 +40,9 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
     private final InvoiceRepository invoiceRepository;
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
+
+    @Value("${invoice.pdf.location}")
+    private String fileLocation;
 
     @Autowired
     public InvoiceManagementServiceImpl(InvoiceRepository invoiceRepository, ProductRepository productRepository, CustomerRepository customerRepository) {
@@ -102,7 +110,9 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
 
             List<Product> products = invoice.getProducts();
 
-            return generatePdfInvoice(invoiceId, customer, products);
+            String pdfInvoice = generatePdfInvoice(invoiceId, customer, products);
+            updateInvoiceImportedFlag(invoice);
+            return pdfInvoice;
         } catch (DocumentException e) {
             logger.error(e.getMessage());
             throw e;
@@ -110,8 +120,15 @@ public class InvoiceManagementServiceImpl implements InvoiceManagementService {
 
     }
 
-    private String generatePdfInvoice(String invoiceId, Customer customer, List<Product> products) throws DocumentException, FileNotFoundException {
-        File importInvoiceFile = new File(String.format("%s.pdf",invoiceId));  //TODO - configurable file-location and file-name
+    private void updateInvoiceImportedFlag(Invoice invoice) {
+        invoice.setImported(true);
+        invoiceRepository.save(invoice);
+    }
+
+    private String generatePdfInvoice(String invoiceId, Customer customer, List<Product> products) throws DocumentException, IOException {
+        Path path = Paths.get(this.fileLocation);
+        Files.createDirectories(path);
+        File importInvoiceFile = new File(path.toFile(), String.format(PDF_FILENAME_FORMAT, invoiceId));
         FileOutputStream fileOutputStream = new FileOutputStream(importInvoiceFile);
         Document document = new Document();
         PdfWriter.getInstance(document, fileOutputStream);
